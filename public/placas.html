@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Placas Cadastradas - Líder Despachante</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f2f4f8;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: #1f2937;
+      color: #fff;
+      padding: 1.2rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    nav a {
+      color: #cbd5e1;
+      text-decoration: none;
+      margin-left: 1.5rem;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #fff;
+    }
+
+    main {
+      padding: 2rem;
+      flex: 1;
+    }
+
+    .search-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .search-container input {
+      padding: 0.8rem;
+      width: 300px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      transition: border 0.3s ease;
+    }
+
+    .search-container input:focus {
+      border-color: #3b82f6;
+      outline: none;
+    }
+
+    .toggle-view {
+      cursor: pointer;
+      background-color: #3b82f6;
+      color: #fff;
+      padding: 0.8rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .toggle-view:hover {
+      background-color: #2563eb;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 1rem;
+    }
+
+    th {
+      background-color: #f1f5f9;
+      color: #334155;
+      font-weight: 600;
+    }
+
+    .actions button {
+      margin-right: 0.5rem;
+      padding: 0.5rem 0.8rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+
+    .actions .edit {
+      background-color: #facc15;
+      color: #000;
+    }
+
+    .actions .edit:hover {
+      background-color: #eab308;
+    }
+
+    .actions .delete {
+      background-color: #ef4444;
+      color: white;
+    }
+
+    .actions .delete:hover {
+      background-color: #dc2626;
+    }
+
+    .cards-container {
+      display: none;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-top: 2rem;
+      justify-content: flex-start;
+    }
+
+    .card {
+      background: #fff;
+      padding: 1.2rem 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 380px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .card strong {
+      display: block;
+      margin-top: 0.8rem;
+      font-weight: 600;
+      color: #1e293b;
+      font-size: 1.1rem;
+    }
+
+    .card button {
+      margin-top: 1rem;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .card .edit {
+      background-color: #facc15;
+    }
+
+    .card .delete {
+      background-color: #ef4444;
+      color: white;
+    }
+
+    .card button:hover {
+      background-color: #2563eb;
+      color: white;
+    }
+
+    @media (min-width: 768px) {
+      .cards-container {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Líder Despachante - Bot</h1>
+    <nav>
+      <a href="index.html">Conexão</a>
+      <a href="cadastro.html">Cadastro de Placa</a>
+      <a href="placas.html">Placas Cadastradas</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="search-container">
+      <input type="text" id="search" placeholder="Buscar por placa..." />
+      <button class="toggle-view" id="toggleViewBtn">Ver como cartões</button>
+    </div>
+
+    <div class="msg" id="msg"></div>
+
+    <table id="placasTable">
+      <thead>
+        <tr>
+          <th>Placa</th>
+          <th>Status</th>
+          <th>Data Prevista</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="cards-container" id="cardsContainer"></div>
+  </main>
+
+  <script type="module">
+    import { supabase } from './supabaseClient.js';
+
+    const msg = document.getElementById('msg');
+    const tbody = document.querySelector('tbody');
+    const cardsContainer = document.getElementById('cardsContainer');
+    const searchInput = document.getElementById('search');
+    const toggleViewBtn = document.getElementById('toggleViewBtn');
+
+    let currentView = 'table';
+    let placas = [];
+
+    async function carregarPlacas() {
+      const { data, error } = await supabase.from('documentos').select('*').order('data_prevista', { ascending: true });
+
+      if (error) {
+        msg.textContent = 'Erro ao buscar placas.';
+        msg.style.color = 'red';
+        console.error(error);
+        return;
+      }
+
+      placas = data;
+      exibirPlacas();
+    }
+
+    function exibirPlacas() {
+      const filtro = searchInput.value.toUpperCase();
+      const filtradas = placas.filter(p => p.placa.includes(filtro));
+
+      // Tabela
+      tbody.innerHTML = '';
+      filtradas.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${p.placa}</td>
+          <td>${p.status === 1 ? 'Em andamento' : 'Finalizado'}</td>
+          <td>${p.data_prevista}</td>
+          <td class="actions">
+            <button class="edit" onclick="editarStatus('${p.id}', ${p.status})">Editar</button>
+            <button class="delete" onclick="excluirPlaca('${p.id}')">Excluir</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Cards
+      cardsContainer.innerHTML = '';
+      const cardsVisiveis = filtro === '' ? filtradas.slice(0, 6) : filtradas;
+
+      cardsVisiveis.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <strong>Placa:</strong> ${p.placa}
+          <strong>Status:</strong> ${p.status === 1 ? 'Em andamento' : 'Finalizado'}
+          <strong>Data:</strong> ${p.data_prevista}
+          <div>
+            <button class="edit" onclick="editarStatus('${p.id}', ${p.status})">Editar</button>
+            <button class="delete" onclick="excluirPlaca('${p.id}')">Excluir</button>
+          </div>
+        `;
+        cardsContainer.appendChild(card);
+      });
+
+      cardsContainer.style.display = currentView === 'cards' ? 'flex' : 'none';
+      document.getElementById('placasTable').style.display = currentView === 'cards' ? 'none' : 'table';
+    }
+
+    searchInput.addEventListener('input', exibirPlacas);
+
+    toggleViewBtn.addEventListener('click', () => {
+      currentView = currentView === 'table' ? 'cards' : 'table';
+      toggleViewBtn.textContent = currentView === 'table' ? 'Ver como cartões' : 'Ver como tabela';
+      exibirPlacas();
+    });
+
+    window.excluirPlaca = async (id) => {
+      const confirma = confirm('Deseja realmente excluir esta placa?');
+      if (!confirma) return;
+
+      const { error } = await supabase.from('documentos').delete().eq('id', id);
+      if (error) {
+        alert('Erro ao excluir.');
+        return;
+      }
+
+      placas = placas.filter(p => p.id !== id);
+      exibirPlacas();
+    };
+
+    window.editarStatus = async (id, statusAtual) => {
+      const novoStatus = statusAtual === 1 ? 2 : 1;
+      const { error } = await supabase.from('documentos').update({ status: novoStatus }).eq('id', id);
+      if (error) {
+        alert('Erro ao atualizar status.');
+        return;
+      }
+
+      const placa = placas.find(p => p.id === id);
+      if (placa) placa.status = novoStatus;
+      exibirPlacas();
+    };
+
+    carregarPlacas();
+  </script>
+</body>
+</html>

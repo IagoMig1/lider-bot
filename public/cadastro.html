@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastro de Placa - Líder Despachante</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f2f4f8;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: #1f2937;
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    nav a {
+      color: #cbd5e1;
+      text-decoration: none;
+      margin-left: 1.5rem;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #fff;
+    }
+
+    main {
+      flex: 1;
+      padding: 3rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: #1e293b;
+      font-weight: 600;
+    }
+
+    form {
+      background-color: #ffffff;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 450px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      display: block;
+      color: #555;
+    }
+
+    input, select {
+      padding: 0.8rem;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      width: 100%;
+      font-size: 1rem;
+      color: #333;
+      transition: border-color 0.2s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: #3b82f6;
+      outline: none;
+    }
+
+    button {
+      padding: 0.9rem;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2563eb;
+    }
+
+    .msg {
+      margin-top: 1.5rem;
+      font-weight: 500;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+
+    .msg.success {
+      color: #22c55e;
+    }
+
+    .msg.error {
+      color: #ef4444;
+    }
+
+    .msg.loading {
+      color: #4b5563;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Líder Despachante - Bot</h1>
+    <nav>
+      <a href="index.html">Conexão</a>
+      <a href="cadastro.html">Cadastro de Placa</a>
+      <a href="placas.html">Placas Cadastradas</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Cadastro de Placa</h2>
+    <form id="cadastro-form">
+      <div>
+        <label for="placa">Placa:</label>
+        <input type="text" id="placa" name="placa" placeholder="Ex: ABC1234" required />
+      </div>
+
+      <div>
+        <label for="status">Status:</label>
+        <select id="status" name="status" required>
+          <option value="1">Em andamento</option>
+          <option value="2">Finalizado</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="data">Data prevista:</label>
+        <input type="date" id="data" name="data" required />
+      </div>
+
+      <button type="submit">Cadastrar</button>
+      <div class="msg" id="mensagem"></div>
+    </form>
+  </main>
+
+  <!-- Supabase client e script -->
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js';
+
+    const supabaseUrl = 'https://hamrgadowxmlisrcafzt.supabase.co'; // substitua pelo seu
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhhbXJnYWRvd3htbGlzcmNhZnp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ4MjIwODksImV4cCI6MjA2MDM5ODA4OX0.hLGY9B8k_doaw_LBa0U6D6ogOhcWNG1_TOB1cVw4zVg'; // substitua pelo seu
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const form = document.getElementById('cadastro-form');
+    const msg = document.getElementById('mensagem');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      msg.textContent = '⏳ Cadastrando...';
+      msg.classList.add('loading');
+      msg.classList.remove('success', 'error');
+
+      const placa = document.getElementById('placa').value.trim().toUpperCase();
+      const status = parseInt(document.getElementById('status').value);
+      const dataPrevista = document.getElementById('data').value;
+
+      if (!placa || !dataPrevista) {
+        msg.textContent = '❌ Preencha todos os campos.';
+        msg.classList.add('error');
+        msg.classList.remove('loading', 'success');
+        return;
+      }
+
+      const { error } = await supabase.from('documentos').insert([{
+        placa,
+        status,
+        data_prevista: dataPrevista
+      }]);
+
+      if (error) {
+        msg.textContent = '❌ Erro ao cadastrar. Tente novamente.';
+        msg.classList.add('error');
+        msg.classList.remove('loading', 'success');
+        console.error(error);
+      } else {
+        msg.textContent = '✅ Placa cadastrada com sucesso!';
+        msg.classList.add('success');
+        msg.classList.remove('loading', 'error');
+        form.reset();
+      }
+    });
+  </script>
+</body>
+</html>
