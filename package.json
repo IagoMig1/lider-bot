@@ -6,17 +6,24 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
+  
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
-  "dependencies": {
-    "@supabase/supabase-js": "^2.49.4",
-    "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "qrcode-terminal": "^0.12.0",
-    "socket.io": "^4.8.1",
-    "supabase": "^2.20.12",
-    "whatsapp-web.js": "^1.27.0"
-  }
+"dependencies": {
+  "@supabase/supabase-js": "^2.49.4",
+  "cors": "^2.8.5",
+  "express": "^5.1.0",
+  "qrcode-terminal": "^0.12.0",
+  "socket.io": "^4.8.1",
+  "supabase": "^2.20.12",
+  "whatsapp-web.js": "^1.27.0",
+  "puppeteer": "^20.8.1",
+  "name": "lider-despachante-bot",
+"version": "1.0.0",
+"description": "Chatbot para WhatsApp do Líder Despachante com painel web em Node.js",
+"author": "Desenvolvido por Lunaris"
+
+}
 }
